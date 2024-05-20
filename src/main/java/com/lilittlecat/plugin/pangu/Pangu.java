@@ -168,12 +168,30 @@ public class Pangu {
         BufferedWriter bw = new BufferedWriter(fw);
 
         try {
-            String line = br.readLine(); // readLine() do not contain newline char
+            String line = br.readLine(); // readLine() does not contain newline char
+            boolean inFrontmatter = false;
+            boolean frontmatterStarted = false;
 
             while (line != null) {
-                line = spacingText(line);
+                if (line.trim().equals("---") && !frontmatterStarted) {
+                    inFrontmatter = true;
+                    frontmatterStarted = true;
+                    line = br.readLine();
+                    continue;
+                }
 
-                // TODO: keep file's raw newline char from difference OS platform
+                if (line.trim().equals("---") && frontmatterStarted) {
+                    inFrontmatter = false;
+                    frontmatterStarted = false;
+                    line = br.readLine();
+                    continue;
+                }
+
+                if (!inFrontmatter) {
+                    line = spacingText(line);
+                }
+
+                // TODO: keep file's raw newline char from different OS platforms
                 bw.write(line);
                 bw.newLine();
 
